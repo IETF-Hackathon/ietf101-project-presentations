@@ -83,6 +83,9 @@ def test_server(url, message, head=False, post=False, wrong_ct=False, ask_imposs
         method = 'HEAD'
     elif post:
         method = 'POST'
+    if 'server' in retrieved_headers.contents:
+        if not insecure:
+            info("Server is %s" % retrieved_headers.contents['server'])
     if rcode == 200:
         if not head:
             body = buffer.getvalue()
