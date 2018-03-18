@@ -1,5 +1,7 @@
 # Code written for the DoH ([DNS-over-HTTPS](https://datatracker.ietf.org/wg/doh)) work during the hackathon
 
+All the code here work with HTTP/2 and TLS.
+
 ## Servers
 
 [doh-proxy](https://github.com/facebookexperimental/doh-proxy/) written
@@ -17,12 +19,18 @@ uses the [dnspython library](http://www.dnspython.org/) to send the request to a
 can start it with `./quart-doh.py -r YOURESOLVER` (`-h` for other
 options. With `-c`, you have a checking mode, for interoperability testing.
 
+Work under way for [CoreDNS](https://coredns.io/)
+
 ## Clients
 
-[JavaScript code ](https://github.com/pusateri/doh-client)
+[JavaScript code](https://github.com/pusateri/doh-client)
 
 Firefox has now
 [a DoH client](https://gist.github.com/bagder/5e29101079e9ac78920ba2fc718aceec)
+
+`dns-client.py` is a Python client using the
+[pycurl](http://pycurl.io/), which itself depends on
+[pycurl](https://curl.haxx.se/libcurl/). 
 
 ## Libraries
 
