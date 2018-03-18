@@ -42,9 +42,24 @@ with `cc -odoh-nghttp  doh-nghttp.o getdns-git/src/parseutil.o -lnghttp2 -lhttp_
 
 ## Libraries
 
-Work is under way for the C library
-[getdns](https://getdnsapi.net). It relies on the
-[new upstream server management](https://github.com/wtoorop/getdns/tree/features/upstream-management) code.
+Work is under way for the C library [getdns](https://getdnsapi.net).
+The development branch for this work is [here](https://github.com/wtoorop/getdns/tree/features/upstream-management-doh).
+It relies on the [new upstream server management](https://github.com/wtoorop/getdns/tree/features/upstream-management) code.
+Once finished, this is how DoH upstreams can be configured in a [Stubby](https://dnsprivacy.org/wiki/x/JYAT) YAML configuration file:
+```
+# Specify the list of upstream recursive name servers to send queries to
+upstream_recursive_servers:
+# Manu Bretelle's DNS over HTTPS server:
+  - uri: "https://dns.dnsoverhttps.net/dns-query"
+# The google DNS over HTTPS server:
+  - uri: "https://dns.google.com/experimental"
+# The cloudflare DNS over HTTPS server:
+  - uri: "https://dns.cloudflare.com/.well-known/dns-query"
+# The Stephane Bortzmeyer's DNS over HTTPS server:
+  - uri: "https://dns.bortzmeyer.fr"
+# The quad9 DNS over TLS server
+  - name: "dns.quad9.net"
+```
 
 [Go DNS](https://miek.nl/2014/august/16/go-dns-package/) now has DoH.
 [The plan](https://miek.nl/2018/february/19/ietf-101-dns-hackathon/)
