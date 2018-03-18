@@ -58,7 +58,34 @@ Client side tests are tests that would be run from the client to test the server
 
 Server side tests are errors that would be logged if a client was to send invalid content
 
-The `test-servers.py` (requires dnspython and pycurl) tests several servers:
+### Client side
+
+* correct MIME type
+* return code should be 415 when the content type is invalid
+* return code should be 405 when the method is not accepted (check that Allow header is set). What about HEAD? if the server does not accept GET, then HEAD is pointless . doh-proxy fail the HEAD handling: https://github.com/facebookexperimental/doh-proxy/issues/37
+* return code should be 406 when the content type is not accepted by the server: does the server returns a list of accepted content type?
+* does server supports GET
+* does server supports POST
+* Invalid certificates should be rejected
+* "intelligent" use of the cache-control and expires headers
+* send Base64 with padding
+
+### Server Side
+
+* ID set to 0
+* if GET, check that ct= and dns= exist and that ct= has a proper value
+* check the MIME type
+
+### Software
+
+[Manu Bretelle's test system](https://github.com/chantra/doh-proxy/tree/integration_tests_). To
+install dependencies: `pip install -e .[integration_tests]`. To run
+the test: `PYTHONPATH=. python3 ./dohproxy/integration.py --domain
+dohserver.example.com`. See `-h` for more options.
+        
+This is using the unittest framework and basically will print the result for individual tests and then spit out the exceptions.
+    
+Also, the `test-servers.py` (requires dnspython and pycurl) tests several servers:
 
 ```./test-servers.py www.ietf.org  https://dns.dnsoverhttps.net/dns-query  https://dns.google.com/experimental https://dns.cloudflare.com/.well-known/dns-query https://dns.bortzmeyer.fr  
 https://dns.dnsoverhttps.net/dns-query
@@ -77,24 +104,12 @@ https://dns.bortzmeyer.fr
 WARNING: Impossible content type requested and accepted
 ```
 
+# Questions/notes about the current draft
 
-## Client side
+Wire format specification should explicitly say that length preambule
+is not part of the blob, just to be explicit.
 
-* correct MIME type
-* return code should be 415 when the content type is invalid
-* return code should be 405 when the method is not accepted (check that Allow header is set). What about HEAD? if the server does not accept GET, then HEAD is pointless . doh-proxy fail the HEAD handling: https://github.com/facebookexperimental/doh-proxy/issues/37
-* return code should be 406 when the content type is not accepted by the server: does the server returns a list of accepted content type?
-* does server supports GET
-* does server supports POST
-* Invalid certificates should be rejected
-* "intelligent" use of the cache-control and expires headers
-* send Base64 with padding
-
-## Server Side
-
-* ID set to 0
-* if GET, check that ct= and dns= exist and that ct= has a proper value
-* check the MIME type
+TODO Olafur with GET and POST
 
 # Bug fixes
 
