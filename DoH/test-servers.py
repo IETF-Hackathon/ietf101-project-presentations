@@ -29,7 +29,7 @@ class Storage:
         if buf.startswith(b"HTTP") or buf == b"\r\n":
             return
         (name, value) = buf.split(b":", maxsplit=1)
-        self.contents[name] = value 
+        self.contents[name.decode()] = value.decode().lstrip(' ').rstrip('\r\n')
 
     def __str__(self):
         return self.contents
@@ -87,9 +87,19 @@ def test_server(url, message, head=False, post=False, wrong_ct=False, ask_imposs
         if not head:
             body = buffer.getvalue()
             response = dns.message.from_wire(body)
-        if b"content-type" not in retrieved_headers.contents:
+            if 'content-length' not in retrieved_headers.contents:
+                error("No content length")
+            else:
+                if int(retrieved_headers.contents['content-length']) != len(body):
+                    error("Content length announced %s bytes, real %s bytes" % \
+                          (int(retrieved_headers.contents['content-length']), len(body)))
+        if 'content-type' not in retrieved_headers.contents:
             error("No content type")
-        if b"cache-control" not in retrieved_headers.contents:
+        else:
+            ct = retrieved_headers.contents['content-type']
+            if  ct != 'application/dns-udpwireformat':
+                error("Wrong content type %s" % ct)
+        if "cache-control" not in retrieved_headers.contents:
             warning("No cache control")
         if wrong_ct:
             error("Wrong content type accepted")
