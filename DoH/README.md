@@ -24,7 +24,8 @@ Work under way for [CoreDNS](https://coredns.io/)
 ## Clients
 
 [JavaScript code](https://github.com/pusateri/doh-client) using the
-[dns-packet library](https://github.com/mafintosh/dns-packet)
+[dns-packet library](https://github.com/mafintosh/dns-packet). A test
+Web page is [under development](https://github.com/pusateri/doh-webpack).
 
 Firefox has now
 [a DoH client](https://gist.github.com/bagder/5e29101079e9ac78920ba2fc718aceec)
