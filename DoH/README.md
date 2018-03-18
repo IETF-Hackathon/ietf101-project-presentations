@@ -23,7 +23,8 @@ Work under way for [CoreDNS](https://coredns.io/)
 
 ## Clients
 
-[JavaScript code](https://github.com/pusateri/doh-client)
+[JavaScript code](https://github.com/pusateri/doh-client) using the
+[dns-packet library](https://github.com/mafintosh/dns-packet)
 
 Firefox has now
 [a DoH client](https://gist.github.com/bagder/5e29101079e9ac78920ba2fc718aceec)
@@ -107,9 +108,12 @@ WARNING: Impossible content type requested and accepted
 # Questions/notes about the current draft
 
 Wire format specification should explicitly say that length preambule
-is not part of the blob, just to be explicit.
+is not part of the DNS wireformat blob, just to be explicit? No
+implementor included it (it is useless for HTTP).
 
-TODO Olafur with GET and POST
+Should we use
+[GET, POST or both?](https://mailarchive.ietf.org/arch/msg/doh/-2AtS1o32YkoZvzo6UXU0qDx3RY)
+(see the Cloudflare test above)
 
 # Bug fixes
 
