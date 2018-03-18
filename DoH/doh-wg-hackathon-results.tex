@@ -1,0 +1,56 @@
+\documentclass{beamer}
+
+\usetheme{AnnArbor}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{url}
+
+\author[Stéphane Bortzmeyer]
+{
+  Stéphane Bortzmeyer, AFNIC \texttt{bortzmeyer+ietf@nic.fr}
+}
+
+\title[Hackathon]{Hackathon Experiences}
+
+\date[IETF 101]
+{IETF 101, London, march 2018}
+
+\begin{document}
+
+\begin{frame}
+\titlepage  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Data}
+  \begin{itemize}
+  \item Six persons working on DoH
+  \item We have five public DoH servers (three ``production''), all
+    using different code bases
+  \item Four (available) server software (Python, Lua…)
+  \item Four client software (Python, C, JavaScript…)
+  \item Two libraries  
+  \end{itemize}
+  \url{https://github.com/IETF-Hackathon/ietf101-project-presentations/tree/master/DoH}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Results}
+  \begin{itemize}
+  \item Everyone happily talks to each other
+  \item No surprise: DoH is a no-brainer
+  \item Some things are not fully specified  
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Issues}
+  \begin{itemize}
+  \item GET, POST and HEAD (risk for interoperability)
+  \item Only one server returns Expires: Should it? (``Caching model''
+    thread in october 2017)
+  \end{itemize}
+\end{frame}
+
+\end{document}
