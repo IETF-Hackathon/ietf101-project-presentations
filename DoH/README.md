@@ -33,6 +33,12 @@ Firefox has now
 [pycurl](http://pycurl.io/), which itself depends on
 [pycurl](https://curl.haxx.se/libcurl/). 
 
+`doh-nghttp.c` is a C client, using the
+[nghttp2 asynchronous HTTP/2 library](https://nghttp2.org/) and the
+[getdns library](https://getdnsapi.net) to encode and decode DNS
+messages. You can compile it with `cc -c doh-nghttp.c` and link it
+with `cc -odoh-nghttp  doh-nghttp.o getdns-git/src/parseutil.o -lnghttp2 -lhttp_parser -levent -lssl -lcrypto -levent_openssl -lgetdns`.
+
 ## Libraries
 
 Work is under way for the C library
