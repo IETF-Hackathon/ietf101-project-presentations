@@ -14,7 +14,7 @@
 \title[Hackathon]{Hackathon Experiences}
 
 \date[IETF 101]
-{IETF 101, London, march 2018}
+{IETF 101, London, 22 march 2018}
 
 \begin{document}
 
@@ -29,7 +29,7 @@
   \item We have five public DoH servers (three ``production''), all
     using different code bases
   \item Four (available) server software (Python, Lua…)
-  \item Four client software (Python, C, JavaScript…)
+  \item Five client software (Python, C, JavaScript, Perl…)
   \item Two libraries  
   \end{itemize}
   \url{https://github.com/IETF-Hackathon/ietf101-project-presentations/tree/master/DoH}
@@ -40,16 +40,18 @@
   \begin{itemize}
   \item Everyone happily talks to each other
   \item No surprise: DoH is a no-brainer
+  \item Running over HTTPS challenges some assumptions in the libraries   
   \item Some things are not fully specified  
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Issues}
+  \frametitle{Issues seen during the hackathon}
   \begin{itemize}
-  \item GET, POST and HEAD (risk for interoperability)
+  \item GET, POST, OPTIONS and HEAD (risk for interoperability)
   \item Only one server returns Expires: Should it? (``Caching model''
     thread in october 2017)
+  \item ``Translation'' of DNS response in HTTP status code and/or headers  
   \end{itemize}
 \end{frame}
 
