@@ -8,7 +8,8 @@ All the code here work with HTTP/2 and TLS.
 in Python, and using [dnspython](http://www.dnspython.org/) saw
 fixes and improvments.
 
-[Tony Finch's proxy](https://fanf.dreamwidth.org/123507.html), as a
+[Tony Finch's proxy](https://fanf.dreamwidth.org/123507.html) (and
+[the second day](https://fanf.dreamwidth.org/123738.html)), as a
 Nginx module in Lua. doh101 is available [at Github](https://github.com/fanf2/doh101) and [at his Gitlab](https://dotat.at/cgi/git/doh101.git).
 
 [Presentation](https://datatracker.ietf.org/meeting/101/materials/slides-101-hackathon-sessa-dnsproxy-local-dns-over-http-private-resolver) of [DNSproxy](https://github.com/fantuz/DNSProxy)
