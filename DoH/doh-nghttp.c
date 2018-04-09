@@ -166,44 +166,19 @@ submit_request (http2_session_data * session_data)
   int b;
   size_t size;
   const char *ctype = "application/dns-udpwireformat";
-  getdns_dict *dict, *rdict, *qdict, *hdict;
-  getdns_bindata **dns_name_wire_fmt;
+  getdns_dict *qdict;
+  char qdict_str[1124];
   char *b64s;
   char *method;
   buffer = malloc (1024);
   b64s = malloc (1024);
-  dict = getdns_dict_create ();
-  qdict = getdns_dict_create ();
-  rdict = getdns_dict_create ();
-  hdict = getdns_dict_create ();
   npath[0] = '\0';
   strncpy (npath, stream_data->path, stream_data->pathlen);
   npath[stream_data->pathlen] = '\0';
-  dns_name_wire_fmt = malloc (sizeof (getdns_bindata *));
-  getdns_convert_fqdn_to_dns_name (session_data->qname, dns_name_wire_fmt);
-  result = getdns_dict_set_bindata (dict, "qname", *dns_name_wire_fmt);
-  if (result != GETDNS_RETURN_GOOD)
-    {
-      fprintf (stderr, "Cannot set dict bindata qname: %s\n",
-	       getdns_get_errorstr_by_id (result));
-      exit (1);
-    }
-  result = getdns_dict_set_int (dict, "qtype", GETDNS_RRTYPE_A);
-  if (result != GETDNS_RETURN_GOOD)
-    {
-      fprintf (stderr, "Cannot set dict qtype: %s\n",
-	       getdns_get_errorstr_by_id (result));
-      exit (1);
-    }
-  result = getdns_dict_set_dict (qdict, "question", dict);
-  if (result != GETDNS_RETURN_GOOD)
-    {
-      fprintf (stderr, "Cannot set dict qdict: %s\n",
-	       getdns_get_errorstr_by_id (result));
-      exit (1);
-    }
-  result = getdns_dict_set_int (rdict, "rd", 1);
-  result = getdns_dict_set_dict (qdict, "header", rdict);
+  (void) snprintf( qdict_str, sizeof(qdict_str)
+                 , "{header:{rd:1},question:{qtype:GETDNS_RRTYPE_A,qname:%s.}}"
+                 , session_data->qname);
+  result = getdns_str2dict(qdict_str, &qdict);
   if (result != GETDNS_RETURN_GOOD)
     {
       fprintf (stderr, "Cannot set dict qdict: %s\n",
