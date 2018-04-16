@@ -145,7 +145,7 @@ typedef struct
   struct bufferevent *bev;
   http2_stream_data *stream_data;
   char *qname;
-  uint8_t **request_wr;
+  uint8_t *request_wr;
   unsigned int request_wr_length;
   unsigned short int post;
   nghttp2_data_provider *provider;
@@ -162,48 +162,22 @@ submit_request (http2_session_data * session_data)
   const struct http_parser_url *u = stream_data->u;
   char *npath = malloc (1024);
   getdns_return_t result;
-  uint8_t **buffer;
+  uint8_t *buffer;
   int b;
   size_t size;
   const char *ctype = "application/dns-udpwireformat";
-  getdns_dict *dict, *rdict, *qdict, *hdict;
-  getdns_bindata **dns_name_wire_fmt;
+  getdns_dict *qdict;
+  char qdict_str[1124];
   char *b64s;
   char *method;
-  buffer = malloc (1024);
   b64s = malloc (1024);
-  dict = getdns_dict_create ();
-  qdict = getdns_dict_create ();
-  rdict = getdns_dict_create ();
-  hdict = getdns_dict_create ();
   npath[0] = '\0';
   strncpy (npath, stream_data->path, stream_data->pathlen);
   npath[stream_data->pathlen] = '\0';
-  dns_name_wire_fmt = malloc (sizeof (getdns_bindata *));
-  getdns_convert_fqdn_to_dns_name (session_data->qname, dns_name_wire_fmt);
-  result = getdns_dict_set_bindata (dict, "qname", *dns_name_wire_fmt);
-  if (result != GETDNS_RETURN_GOOD)
-    {
-      fprintf (stderr, "Cannot set dict bindata qname: %s\n",
-	       getdns_get_errorstr_by_id (result));
-      exit (1);
-    }
-  result = getdns_dict_set_int (dict, "qtype", GETDNS_RRTYPE_A);
-  if (result != GETDNS_RETURN_GOOD)
-    {
-      fprintf (stderr, "Cannot set dict qtype: %s\n",
-	       getdns_get_errorstr_by_id (result));
-      exit (1);
-    }
-  result = getdns_dict_set_dict (qdict, "question", dict);
-  if (result != GETDNS_RETURN_GOOD)
-    {
-      fprintf (stderr, "Cannot set dict qdict: %s\n",
-	       getdns_get_errorstr_by_id (result));
-      exit (1);
-    }
-  result = getdns_dict_set_int (rdict, "rd", 1);
-  result = getdns_dict_set_dict (qdict, "header", rdict);
+  (void) snprintf( qdict_str, sizeof(qdict_str)
+                 , "{header:{rd:1},question:{qtype:GETDNS_RRTYPE_A,qname:%s.}}"
+                 , session_data->qname);
+  result = getdns_str2dict(qdict_str, &qdict);
   if (result != GETDNS_RETURN_GOOD)
     {
       fprintf (stderr, "Cannot set dict qdict: %s\n",
@@ -222,20 +196,20 @@ submit_request (http2_session_data * session_data)
     {
       method = "GET";
     }
-  result = getdns_msg_dict2wire (qdict, buffer, &size);
+  result = getdns_msg_dict2wire (qdict, &buffer, &size);
   if (result != GETDNS_RETURN_GOOD)
     {
       fprintf (stderr, "Cannot convert to wire: %s\n",
 	       getdns_get_errorstr_by_id (result));
       exit (1);
     }
-  memcpy (session_data->request_wr, buffer, size);
+  session_data->request_wr = buffer;
   session_data->request_wr_length = size;
   fprintf (stderr, "DEBUG Produced a DNS message of %d bytes\n", (int) size);
   /* fprintf(stderr, "Send %d bytes: %s\n", b, b64s); */
   if (!post_flag)
     {
-      b = gldns_b64_ntop (*buffer, size, b64s, 1024);
+      b = gldns_b64_ntop (buffer, size, b64s, 1024);
       strcat (npath, "?ct&dns=");
       strcat (npath, b64s);
     }
@@ -248,8 +222,8 @@ submit_request (http2_session_data * session_data)
 	     u->field_data[UF_SCHEMA].len),
     MAKE_NV (":authority", stream_data->authority, stream_data->authoritylen),
     MAKE_NV (":path", npath, strlen (npath)),
-    MAKE_NV (":content-type", ctype, strlen (ctype)),
-    MAKE_NV (":content-length", size_str, strlen (size_str))
+    MAKE_NV ("content-type", ctype, strlen (ctype)),
+    MAKE_NV ("content-length", size_str, strlen (size_str)),
   };;
   unsigned short int hdrs_offset;
   if (post_flag)
@@ -597,7 +571,6 @@ create_http2_session_data (struct event_base *evbase)
 
   memset (session_data, 0, sizeof (http2_session_data));
   session_data->dnsbase = evdns_base_new (evbase, 1);
-  session_data->request_wr = malloc (1024);
   session_data->request_wr_length = 0;
   session_data->provider = NULL;
   session_data->post = 0;
@@ -888,8 +861,12 @@ main (int argc, char **argv)
     {
       session_data->post = 1;
       session_data->provider = malloc (sizeof (nghttp2_data_provider));
-      /* Data does not come from outside, no need for a file descriptor */
-      session_data->provider->source.fd = 0;
+      /* Data does not come from outside, no need for a file descriptor
+       * Also data is copied from session_data->request_wr, do need to set
+       * source.ptr either.  If we would have used it, this is not the
+       * moment to initialize it b.t.w., because request_wr is not yet
+       * initialized either.
+       */
       session_data->provider->source.ptr = session_data->request_wr;
       session_data->provider->read_callback = post_data_read_callback;
     }
